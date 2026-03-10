@@ -40,7 +40,7 @@ public class PipeControllerScript : MonoBehaviour
 		float rightEdge = cam.transform.position.x
 						  + cam.orthographicSize * cam.aspect;
 
-		float spawnX = rightEdge + 2f;
+		float spawnX = rightEdge + 0.3f;
 
 		Instantiate(pipePrefab,
 			new Vector3(spawnX, spawnY, 0),
