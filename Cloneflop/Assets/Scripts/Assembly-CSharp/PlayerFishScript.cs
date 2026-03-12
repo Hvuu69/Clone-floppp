@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using TMPro;
 public class PlayerFishScript : MonoBehaviour
 {
 	public float jumpForce = 5f;
@@ -7,11 +7,14 @@ public class PlayerFishScript : MonoBehaviour
 	private bool isDead = false;
 
 	public AudioClip dieSound;
+	public AudioClip scoreSound;
 	public float audioVolume = 0.5f;
 
 	public float maxUpAngle = 30f;
 	public float maxDownAngle = -90f;
 	public float rotateSpeed = 5f;
+	public int score = 0; // Biến lưu điểm
+	public TextMeshProUGUI scoreText;
 
 	void Start()
 	{
@@ -53,9 +56,28 @@ public class PlayerFishScript : MonoBehaviour
 			rotateSpeed * Time.deltaTime
 		);
 	}
+	private void OnTriggerEnter2D(Collider2D collision)
+	{
+		// Kiểm tra xem vật thể va chạm có tag là "ScoreZone" không
+		if (collision.gameObject.CompareTag("ScoreZone"))
+		{
+			score++;
+			Debug.Log("Điểm hiện tại: " + score);
+			UpdateScoreUI();
+			AudioSource.PlayClipAtPoint(scoreSound, transform.position, audioVolume);
 
+		}
+		void UpdateScoreUI()
+		{
+			if (scoreText != null)
+			{
+				scoreText.text = score.ToString();
+			}
+		}
+	}
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
+
 		if (isDead) return;
 
 		isDead = true;

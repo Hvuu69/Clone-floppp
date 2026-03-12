@@ -14,11 +14,45 @@ public class OptionsButtonScript : MonoBehaviour
 	public GameObject GameUI; // Assign this in the Unity Editor
 	public GameObject Tutorial; // Assign this in the Unity Editor
 	public GameObject PipeController; // Assign this in the Unity Editor
+	public GameObject SettingsMenu; // Assign this in the Unity Editor
 
 
-	public void startGame()
+	private bool tutorialStarted = false; // Track if tutorial has started
+	private void Update()
 	{
-		// Activate the player GameObject
+		// Check for screen tap
+		if (Input.GetMouseButtonDown(0) && tutorialStarted)
+		{
+			startGame();
+		}
+	}
+	public void settings()
+	{
+		// Implement settings functionality here
+		Debug.Log("Settings button clicked!");
+		// Active the settings menu or perform any desired actions
+		if (SettingsMenu != null)
+		{
+			SettingsMenu.SetActive(true);
+		}
+		else
+		{
+			Debug.LogError("SettingsMenu GameObject is not assigned in the Inspector!");
+		}
+
+	}
+	public void startTutorial()
+	{
+		// Activate the tutorial GameObject
+		if (Tutorial != null)
+		{
+			Tutorial.SetActive(true);
+		}
+		else
+		{
+			Debug.LogError("Tutorial GameObject is not assigned in the Inspector!");
+		}
+		// Activeate the player GameObject
 		if (player != null)
 		{
 			player.SetActive(true);
@@ -27,6 +61,56 @@ public class OptionsButtonScript : MonoBehaviour
 		{
 			Debug.LogError("Player GameObject is not assigned in the Inspector!");
 		}
+		// Deactivate the menu GameObject
+		if (Menu != null)
+		{
+			Menu.SetActive(false);
+		}
+		else
+		{
+			Debug.LogError("Menu GameObject is not assigned in the Inspector!");
+		}
+		//activeate Game ui
+		if (GameUI != null)
+		{
+			GameUI.SetActive(true);
+		}
+		else
+		{
+			Debug.LogError("GameUI GameObject is not assigned in the Inspector!");
+		}
+
+		tutorialStarted = true; // Mark tutorial as started
+	}
+
+
+
+	public void startGame()
+	{
+		//deactivate the tutorial GameObject
+		if (Tutorial != null)
+		{
+			Tutorial.SetActive(false);
+		}
+
+		// Enable gravity for the player
+		if (player != null)
+		{
+			Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
+			if (rb != null)
+			{
+				rb.gravityScale = 0.6f; // Adjust gravity scale as needed
+			}
+			else
+			{
+				Debug.LogError("Player GameObject does not have a Rigidbody2D component!");
+			}
+		}
+		else
+		{
+			Debug.LogError("Player GameObject is not assigned in the Inspector!");
+		}
+
 		// Deactivate the menu GameObject
 		if (Menu != null)
 		{
@@ -54,22 +138,7 @@ public class OptionsButtonScript : MonoBehaviour
 		{
 			Debug.LogError("PipeController GameObject is not assigned in the Inspector!");
 		}
-		// //activeate Tutorial
-		// if (Tutorial != null)
-		// {
-		// 	Tutorial.SetActive(true);
-		// }
-		// else
-		// {
-		// 	Debug.LogError("Tutorial GameObject is not assigned in the Inspector!");
-		// }
-
 
 	}
 
-	private void StartTutorial()
-	{
-		Debug.Log("Tutorial started.");
-		// Add tutorial logic here
-	}
 }
