@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement; // Import SceneManagement to reload the scene
 
 public class GroundControllerScript : MonoBehaviour
 {
@@ -20,6 +21,24 @@ public class GroundControllerScript : MonoBehaviour
 		if (transform.position.x < startPos.x - resetX)
 		{
 			transform.position = startPos;
+		}
+	}
+
+	void OnCollisionEnter2D(Collision2D collision)
+	{
+		if (collision.gameObject.CompareTag("Player"))
+		{
+			Debug.Log("Player collided with the ground. Stopping the game.");
+			//Gọi hàm GameOver từ OptionsButtonScript
+			OptionsButtonScript optionsButtonScript = FindObjectOfType<OptionsButtonScript>();
+			if (optionsButtonScript != null)
+			{
+				optionsButtonScript.GameOver();
+			}
+			else
+			{
+				Debug.LogError("OptionsButtonScript not found in the scene!");
+			}
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+
 public class PlayerFishScript : MonoBehaviour
 {
 	public float jumpForce = 5f;
@@ -13,12 +14,14 @@ public class PlayerFishScript : MonoBehaviour
 	public float maxUpAngle = 30f;
 	public float maxDownAngle = -90f;
 	public float rotateSpeed = 5f;
-	public int score = 0; // Biến lưu điểm
+
+	public int score = 0;
 	public TextMeshProUGUI scoreText;
 
 	void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
+		UpdateScoreUI();
 	}
 
 	void Update()
@@ -30,7 +33,7 @@ public class PlayerFishScript : MonoBehaviour
 			Fly();
 		}
 
-		RotateBird();
+		RotateFish();
 	}
 
 	void Fly()
@@ -41,7 +44,7 @@ public class PlayerFishScript : MonoBehaviour
 		transform.rotation = Quaternion.Euler(0, 0, maxUpAngle);
 	}
 
-	void RotateBird()
+	void RotateFish()
 	{
 		float velocityY = rb.linearVelocity.y;
 
@@ -56,43 +59,51 @@ public class PlayerFishScript : MonoBehaviour
 			rotateSpeed * Time.deltaTime
 		);
 	}
+
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		// Kiểm tra xem vật thể va chạm có tag là "ScoreZone" không
-		if (collision.gameObject.CompareTag("ScoreZone"))
-		{
-			score++;
-			Debug.Log("Điểm hiện tại: " + score);
-			UpdateScoreUI();
-			AudioSource.PlayClipAtPoint(scoreSound, transform.position, audioVolume);
-
-		}
-		void UpdateScoreUI()
-		{
-			if (scoreText != null)
-			{
-				scoreText.text = score.ToString();
-			}
-		}
-	}
-	private void OnCollisionEnter2D(Collision2D collision)
-	{
-
 		if (isDead) return;
 
+		// Tính điểm
+		if (collision.CompareTag("ScoreZone"))
+		{
+			score++;
+			Debug.Log("Score: " + score);
+
+			UpdateScoreUI();
+
+			if (scoreSound != null)
+				AudioSource.PlayClipAtPoint(scoreSound, transform.position, audioVolume);
+		}
+
+		// Game Over khi chạm pipe hoặc ground
+		if (collision.CompareTag("Pipe") || collision.CompareTag("Ground"))
+		{
+			GameOver();
+		}
+	}
+
+	void UpdateScoreUI()
+	{
+		if (scoreText != null)
+		{
+			scoreText.text = score.ToString();
+		}
+	}
+
+	void GameOver()
+	{
 		isDead = true;
 
 		Debug.Log("Game Over");
 
-		AudioSource.PlayClipAtPoint(dieSound, transform.position, audioVolume);
+		if (dieSound != null)
+			AudioSource.PlayClipAtPoint(dieSound, transform.position, audioVolume);
 
-		// cho cá rơi xuống
 		rb.linearVelocity = Vector2.zero;
 		rb.gravityScale = 4;
 
 		// tắt điều khiển
 		enabled = false;
-
-		Time.timeScale = 0f;
 	}
 }
