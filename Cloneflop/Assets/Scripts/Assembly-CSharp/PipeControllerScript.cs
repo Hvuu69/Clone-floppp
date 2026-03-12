@@ -3,16 +3,16 @@ using UnityEngine;
 public class PipeControllerScript : MonoBehaviour
 {
 	public GameObject pipePrefab;   // Prefab ống nước
-	public float spawnRate = 2f;    // Thời gian spawn (giây)
-	public float heightOffset = 2f; // Độ lệch cao thấp
+	public float spawnRate;    // Thời gian spawn (giây)
+	public float heightOffset; // Độ lệch cao thấp
 
-	public float safeMargin = 2.2f; // Khoảng cách an toàn trên dưới
+	public float safeMargin; // Khoảng cách an toàn trên dưới
 
 	private float timer = 0f;
 
 	void Update()
 	{
-		if (timer < spawnRate)
+		if (timer < spawnRate) //Thời gian
 		{
 			timer += Time.deltaTime;
 		}
@@ -23,14 +23,13 @@ public class PipeControllerScript : MonoBehaviour
 		}
 	}
 
-	void SpawnPipe()
+	void SpawnPipe() // Spawn ống nước
 	{
 		Camera cam = Camera.main;
 
 		float screenBottom = cam.transform.position.y - cam.orthographicSize;
 		float screenTop = cam.transform.position.y + cam.orthographicSize;
 
-		float safeMargin = 2.2f;
 
 		float minY = screenBottom + safeMargin;
 		float maxY = screenTop - safeMargin;
