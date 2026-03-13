@@ -3,148 +3,100 @@ using UnityEngine.SceneManagement;
 
 public class OptionsButtonScript : MonoBehaviour
 {
+    public GameObject GameUI;
+    public GameObject Tutorial;
+    public GameObject SettingsMenu;
+    public GameObject GameOverMenu;
+	public GameObject pipeControler;
+
+	private Rigidbody2D rb;
+	private bool gameStarted = false;
+
 	public GameObject player;
-	public GameObject Menu;
-	public GameObject GameUI;
-	public GameObject Tutorial;
-	public GameObject PipeController;
-	public GameObject SettingsMenu;
-	public GameObject menuFish;
-	public GameObject GameOverMenu;
 
-	private bool tutorialStarted = false;
-	private bool gameUIActivated = false;
+    private bool tutorialStarted = false;
+    private bool gameUIActivated = false;
 
-	private void Update()
-	{
-		// Check for screen tap
-		if (Input.GetMouseButtonDown(0) && tutorialStarted)
+    public void changeScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName);
+        Time.timeScale = 1f;
+    }
+
+   void Start()
+    {
+        rb = player.GetComponent<Rigidbody2D>();
+
+        // Ban đầu không có trọng lực
+        rb.gravityScale = 0f;
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0) && !gameStarted)
+        {
+            StartGame();
+        }
+    }
+
+    void StartGame()
+    {
+        gameStarted = true;
+
+        // Bật trọng lực cho player
+        rb.gravityScale = 0.6f;
+
+        // Tắt tutorial
+        if (Tutorial != null)
+        {
+            Tutorial.SetActive(false);
+        }
+		if(pipeControler != null)
 		{
-			startGame();
+			pipeControler.SetActive(true);
 		}
-	}
-	public void restartGame()
+		// Hiển thị Game UI
+		if (GameUI != null)
+		{
+			GameUI.SetActive(true);
+		}
+    }
+	public void RestartGame()
 	{
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 		Time.timeScale = 1f;
 	}
 
-	void ActivateGameUI()
-	{
-		if (!gameUIActivated && GameUI != null)
+    public void GameOver()
+    {
+        Time.timeScale = 0f;
+
+        Debug.Log("Game Over!");
+
+        if (GameOverMenu != null)
+        {
+            GameOverMenu.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("GameOverMenu is not assigned!");
+        }
+
+        if (GameUI != null)
+        {
+            GameUI.SetActive(false);
+        }
+		// Tắt điều khiển
+		enabled = false;
+		// Tắt pipe controler
+		if(pipeControler != null)		
 		{
-			GameUI.SetActive(true);
-			gameUIActivated = true;
-		}
-	}
-
-	public void settings()
-	{
-		Debug.Log("Settings button clicked!");
-
-		if (SettingsMenu != null)
+			pipeControler.SetActive(false);		
+    }
+	//tắt GameUI
+		if(GameUI != null)
 		{
-			SettingsMenu.SetActive(true);
-		}
-		else
-		{
-			Debug.LogError("SettingsMenu GameObject is not assigned in the Inspector!");
-		}
-	}
-
-	public void startTutorial()
-	{
-		if (Tutorial != null)
-		{
-			Tutorial.SetActive(true);
-		}
-		else
-		{
-			Debug.LogError("Tutorial GameObject is not assigned!");
-		}
-
-		if (player != null)
-		{
-			player.SetActive(true);
-		}
-		else
-		{
-			Debug.LogError("Player GameObject is not assigned!");
-		}
-
-		if (Menu != null)
-		{
-			Menu.SetActive(false);
-		}
-
-		ActivateGameUI();
-
-		if (menuFish != null)
-		{
-			menuFish.SetActive(false);
-		}
-		if (GameOverMenu != null)
-		{
-			GameOverMenu.SetActive(false);
-		}
-
-		tutorialStarted = true;
-
-	}
-
-
-	public void startGame()
-	{
-		if (!tutorialStarted)
-		{
-			Debug.Log("You must start the tutorial first!");
-			return;
-		}
-
-		if (Tutorial != null)
-		{
-			Tutorial.SetActive(false);
-		}
-
-		if (player != null)
-		{
-			Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
-
-			if (rb != null)
-			{
-				rb.gravityScale = 0.6f;
-			}
-			else
-			{
-				Debug.LogError("Player does not have Rigidbody2D!");
-			}
-		}
-
-		ActivateGameUI();
-
-		if (PipeController != null)
-		{
-			PipeController.SetActive(true);
-		}
-	}
-
-	public void GameOver()
-	{
-		Time.timeScale = 0f;
-		Debug.Log("Game Over!");
-
-		if (GameOverMenu != null)
-		{
-			GameOverMenu.SetActive(true);
-		}
-		else
-		{
-			Debug.LogError("GameOverMenu GameObject is not assigned!");
-		}
-
-		if (GameUI != null)
-		{
-			GameUI.SetActive(false);
+		GameUI.SetActive(false);
 		}
 	}
 }

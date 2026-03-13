@@ -2,11 +2,14 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1045 &1
 EditorBuildSettings:
-  serializedVersion: 2
   m_ObjectHideFlags: 0
+  serializedVersion: 2
   m_Scenes:
   - enabled: 1
     path: Assets/Scenes/MainScene.unity
     guid: c4a881a79617568448bdd3258dec4c22
+  - enabled: 1
+    path: Assets/Scenes/MenuScene.unity
+    guid: 41a3fd6fc8d999d408eb90764c045141
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

@@ -3,107 +3,126 @@ using TMPro;
 
 public class PlayerFishScript : MonoBehaviour
 {
-	public float jumpForce = 5f;
-	private Rigidbody2D rb;
-	private bool isDead = false;
+    public float jumpForce = 5f;
+    private Rigidbody2D rb;
+    private bool isDead = false;
 
-	public AudioClip dieSound;
-	public AudioClip scoreSound;
-	public float audioVolume = 0.5f;
+    public AudioClip dieSound;
+    public AudioClip scoreSound;
+    public AudioClip fihSound;
+    public float audioVolume = 0.5f;
 
-	public float maxUpAngle = 30f;
-	public float maxDownAngle = -90f;
-	public float rotateSpeed = 5f;
+    public float maxUpAngle = 30f;
+    public float maxDownAngle = -90f;
+    public float rotateSpeed = 5f;
 
-	public int score = 0;
-	public TextMeshProUGUI scoreText;
+    public int score = 0;
 
-	void Start()
-	{
-		rb = GetComponent<Rigidbody2D>();
-		UpdateScoreUI();
-	}
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI highScoreText;
+    public TextMeshProUGUI lastScoreText;
 
-	void Update()
-	{
-		if (isDead) return;
+    private int highScore;
 
-		if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
-		{
-			Fly();
-		}
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
 
-		RotateFish();
-	}
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
 
-	void Fly()
-	{
-		rb.linearVelocity = Vector2.zero;
-		rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        if (highScoreText != null)
+            highScoreText.text = highScore.ToString();
 
-		transform.rotation = Quaternion.Euler(0, 0, maxUpAngle);
-	}
+        UpdateScoreUI();
+    }
 
-	void RotateFish()
-	{
-		float velocityY = rb.linearVelocity.y;
+    void Update()
+    {
+        if (isDead) return;
 
-		float angle = Mathf.Lerp(maxDownAngle, maxUpAngle, (velocityY + 5f) / 10f);
-		angle = Mathf.Clamp(angle, maxDownAngle, maxUpAngle);
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        {
+            Fly();
+        }
 
-		Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+        RotateFish();
+    }
 
-		transform.rotation = Quaternion.Lerp(
-			transform.rotation,
-			targetRotation,
-			rotateSpeed * Time.deltaTime
-		);
-	}
+    void Fly()
+    {
+        rb.linearVelocity = Vector2.zero;
+        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
-	private void OnTriggerEnter2D(Collider2D collision)
-	{
-		if (isDead) return;
+        transform.rotation = Quaternion.Euler(0, 0, maxUpAngle);
 
-		// Tính điểm
-		if (collision.CompareTag("ScoreZone"))
-		{
-			score++;
-			Debug.Log("Score: " + score);
+        if (fihSound != null)
+            AudioSource.PlayClipAtPoint(fihSound, transform.position, audioVolume);
+    }
 
-			UpdateScoreUI();
+    void RotateFish()
+    {
+        float velocityY = rb.linearVelocity.y;
 
-			if (scoreSound != null)
-				AudioSource.PlayClipAtPoint(scoreSound, transform.position, audioVolume);
-		}
+        float angle = Mathf.Lerp(maxDownAngle, maxUpAngle, (velocityY + 5f) / 10f);
+        angle = Mathf.Clamp(angle, maxDownAngle, maxUpAngle);
 
-		// Game Over khi chạm pipe hoặc ground
-		if (collision.CompareTag("Pipe") || collision.CompareTag("Ground"))
-		{
-			GameOver();
-		}
-	}
+        Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
 
-	void UpdateScoreUI()
-	{
-		if (scoreText != null)
-		{
-			scoreText.text = score.ToString();
-		}
-	}
+        transform.rotation = Quaternion.Lerp(
+            transform.rotation,
+            targetRotation,
+            rotateSpeed * Time.deltaTime
+        );
+    }
 
-	void GameOver()
-	{
-		isDead = true;
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isDead) return;
 
-		Debug.Log("Game Over");
+        if (collision.CompareTag("ScoreZone"))
+        {
+            score++;
+            UpdateScoreUI();
 
-		if (dieSound != null)
-			AudioSource.PlayClipAtPoint(dieSound, transform.position, audioVolume);
+            if (scoreSound != null)
+                AudioSource.PlayClipAtPoint(scoreSound, transform.position, audioVolume);
+        }
 
-		rb.linearVelocity = Vector2.zero;
-		rb.gravityScale = 4;
+        if (collision.CompareTag("Pipe") || collision.CompareTag("Ground"))
+        {
+            GameOver();
+        }
+    }
 
-		// tắt điều khiển
-		enabled = false;
-	}
+    void UpdateScoreUI()
+    {
+        if (scoreText != null)
+            scoreText.text = score.ToString();
+    }
+
+    void GameOver()
+    {
+        isDead = true;
+
+        if (dieSound != null)
+            AudioSource.PlayClipAtPoint(dieSound, transform.position, audioVolume);
+
+        rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = 4;
+
+        if (lastScoreText != null)
+            lastScoreText.text = score.ToString();
+
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt("HighScore", highScore);
+            PlayerPrefs.Save();
+        }
+
+        if (highScoreText != null)
+            highScoreText.text = highScore.ToString();
+
+        enabled = false;
+    }
 }
