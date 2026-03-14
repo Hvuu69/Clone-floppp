@@ -1,63 +1,72 @@
 using UnityEngine;
+using UnityEngine.Advertisements;
 
-public class AdsScript : MonoBehaviour
+public class AdsScript : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener
 {
-	/*
-	Dummy class. This could have happened for several reasons:
+    [SerializeField] string _androidGameId = "fb5e429d-c189-4cbf-93aa-069157d10717"; // GameID
+    [SerializeField] string _iOSGameId = "7654321";
+    [SerializeField] bool _testMode = true; // Luôn để true khi đang demo/test
 
-	1. No dll files were provided to AssetRipper.
+    private string _gameId;
+    private string _adUnitId = "Interstitial_Android"; // Tên Ad Unit mặc định của Unity
 
-		Unity asset bundles and serialized files do not contain script information to decompile.
-			* For Mono games, that information is contained in .NET dll files.
-			* For Il2Cpp games, that information is contained in compiled C++ assemblies and the global metadata.
-			
-		AssetRipper usually expects games to conform to a normal file structure for Unity games of that platform.
-		A unexpected file structure could cause AssetRipper to not find the required files.
+    void Awake()
+    {
+        InitializeAds();
+    }
 
-	2. Incorrect dll files were provided to AssetRipper.
+    public void InitializeAds()
+    {
+        _gameId = (Application.platform == RuntimePlatform.IPhonePlayer) ? _iOSGameId : _androidGameId;
 
-		Any of the following could cause this:
-			* Il2CppInterop assemblies
-			* Deobfuscated assemblies
-			* Older assemblies (compared to when the bundle was built)
-			* Newer assemblies (compared to when the bundle was built)
+        if (!Advertisement.isInitialized && Advertisement.isSupported)
+        {
+            Advertisement.Initialize(_gameId, _testMode, this);
+        }
+    }
 
-		Note: Although assembly publicizing is bad, it alone cannot cause empty scripts. See: https://github.com/AssetRipper/AssetRipper/issues/653
+    // --- CÁC HÀM ĐIỀU KHIỂN ---
 
-	3. Assembly Reconstruction has not been implemented.
+    public void LoadAd()
+    {
+        Debug.Log("Đang tải quảng cáo...");
+        Advertisement.Load(_adUnitId, this);
+    }
 
-		Asset bundles contain a small amount of information about the script content.
-		This information can be used to recover the serializable fields of a script.
+    public void ShowAd()
+    {
+        // Kiểm tra xem máy có mạng và SDK đã sẵn sàng chưa
+        if (Advertisement.isInitialized)
+        {
+            Debug.Log("SDK đã sẵn sàng, đang gọi Show...");
+            Advertisement.Show(_adUnitId, this);
+        }
+        else
+        {
+            Debug.LogError("SDK chưa khởi tạo xong! Hãy đợi vài giây rồi bấm lại.");
+        }
+    }
 
-		See: https://github.com/AssetRipper/AssetRipper/issues/655
+    // --- LOGIC KHI KHỞI TẠO XONG ---
+    public void OnInitializationComplete() { Debug.Log("Unity Ads đã sẵn sàng."); LoadAd(); }
+    public void OnInitializationFailed(UnityAdsInitializationError error, string message) { Debug.Log($"Lỗi khởi tạo: {message}"); }
 
-	4. This script is unnecessary.
+    // --- LOGIC KHI TẢI XONG ---
+    public void OnUnityAdsAdLoaded(string adUnitId) { Debug.Log("Đã tải xong Ad: " + adUnitId); }
+    public void OnUnityAdsFailedToLoad(string adUnitId, UnityAdsLoadError error, string message) { Debug.Log($"Lỗi tải Ad: {message}"); }
 
-		If this script has no asset or script references, it can be deleted.
-		Be sure to resolve any compile errors before deleting because they can hide references.
-
-	5. Script Content Level 0
-
-		AssetRipper was set to not load any script information.
-
-	6. Cpp2IL failed to decompile Il2Cpp data
-
-		If this happened, there will be errors in the AssetRipper.log indicating that it happened.
-		This is an upstream problem, and the AssetRipper developer has very little control over it.
-		Please post a GitHub issue at: https://github.com/SamboyCoding/Cpp2IL/issues
-
-	7. An incorrect path was provided to AssetRipper.
-
-		This is characterized by "Mixed game structure has been found at" in the AssetRipper.log file.
-		AssetRipper expects games to conform to a normal file structure for Unity games of that platform.
-		An unexpected file structure could cause AssetRipper to not find the required files for script decompilation.
-		Generally, AssetRipper expects users to provide the root folder of the game. For example:
-			* Windows: the folder containing the game's .exe file
-			* Mac: the .app file/folder
-			* Linux: the folder containing the game's executable file
-			* Android: the apk file
-			* iOS: the ipa file
-			* Switch: the folder containing exefs and romfs
-
-	*/
+    // --- LOGIC KHI ĐANG XEM ---
+    public void OnUnityAdsShowFailure(string adUnitId, UnityAdsShowError error, string message) { }
+    public void OnUnityAdsShowStart(string adUnitId) { }
+    public void OnUnityAdsShowClick(string adUnitId) { }
+    public void OnUnityAdsShowComplete(string adUnitId, UnityAdsShowCompletionState showCompletionState)
+    {
+        if (showCompletionState == UnityAdsShowCompletionState.COMPLETED)
+        {
+            Debug.Log("Người dùng đã xem hết quảng cáo! Trao thưởng tại đây.");
+        }
+        // Sau khi xem xong, tải cái mới để sẵn sàng cho lần sau
+        LoadAd();
+    }
 }
+

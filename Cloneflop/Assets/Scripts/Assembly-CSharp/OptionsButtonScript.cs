@@ -7,12 +7,13 @@ public class OptionsButtonScript : MonoBehaviour
     public GameObject Tutorial;
     public GameObject SettingsMenu;
     public GameObject GameOverMenu;
-	public GameObject pipeControler;
+    public GameObject pipeControler;
+    public GameObject highScoreText;
 
-	private Rigidbody2D rb;
-	private bool gameStarted = false;
+    private Rigidbody2D rb;
+    private bool gameStarted = false;
 
-	public GameObject player;
+    public GameObject player;
 
     private bool tutorialStarted = false;
     private bool gameUIActivated = false;
@@ -23,12 +24,13 @@ public class OptionsButtonScript : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-   void Start()
+    void Start()
     {
         rb = player.GetComponent<Rigidbody2D>();
 
         // Ban đầu không có trọng lực
         rb.gravityScale = 0f;
+        int highScore = PlayerPrefs.GetInt("HighScore", 0);
     }
 
     void Update()
@@ -46,26 +48,36 @@ public class OptionsButtonScript : MonoBehaviour
         // Bật trọng lực cho player
         rb.gravityScale = 0.6f;
 
+        // Lấy script player
+        PlayerFishScript fishScript = player.GetComponent<PlayerFishScript>();
+        if (fishScript != null)
+        {
+            // Cho phép cá bắt đầu xoay (hàm RotateFish trong Update sẽ chạy)
+            fishScript.hasStarted = true;
+
+            // Gọi hàm Fly() ngay lập tức để cá nhảy lên trong lần click đầu tiên
+            player.SendMessage("Fly");
+        }
         // Tắt tutorial
         if (Tutorial != null)
         {
             Tutorial.SetActive(false);
         }
-		if(pipeControler != null)
-		{
-			pipeControler.SetActive(true);
-		}
-		// Hiển thị Game UI
-		if (GameUI != null)
-		{
-			GameUI.SetActive(true);
-		}
+        if (pipeControler != null)
+        {
+            pipeControler.SetActive(true);
+        }
+        // Hiển thị Game UI
+        if (GameUI != null)
+        {
+            GameUI.SetActive(true);
+        }
     }
-	public void RestartGame()
-	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-		Time.timeScale = 1f;
-	}
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Time.timeScale = 1f;
+    }
 
     public void GameOver()
     {
@@ -77,26 +89,22 @@ public class OptionsButtonScript : MonoBehaviour
         {
             GameOverMenu.SetActive(true);
         }
-        else
-        {
-            Debug.LogError("GameOverMenu is not assigned!");
-        }
 
         if (GameUI != null)
         {
             GameUI.SetActive(false);
         }
-		// Tắt điều khiển
-		enabled = false;
-		// Tắt pipe controler
-		if(pipeControler != null)		
-		{
-			pipeControler.SetActive(false);		
+        // Tắt điều khiển
+        enabled = false;
+        // Tắt pipe controler
+        if (pipeControler != null)
+        {
+            pipeControler.SetActive(false);
+        }
+        //tắt GameUI
+        if (GameUI != null)
+        {
+            GameUI.SetActive(false);
+        }
     }
-	//tắt GameUI
-		if(GameUI != null)
-		{
-		GameUI.SetActive(false);
-		}
-	}
 }

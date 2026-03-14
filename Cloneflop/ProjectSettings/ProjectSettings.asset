@@ -771,7 +771,8 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Standalone: LEVELPLAY_DEPENDENCIES_INSTALLED
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
@@ -846,7 +847,8 @@ PlayerSettings:
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
   vrEditorSettings: {}
-  cloudServicesEnabled: {}
+  cloudServicesEnabled:
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -868,7 +870,7 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 351a78dc-c9ab-4405-8002-80c714754968
+  cloudProjectId: fb5e429d-c189-4cbf-93aa-069157d10717
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames:
   - Very Low
@@ -877,8 +879,8 @@ PlayerSettings:
   - High
   - Very High
   - Ultra
-  projectName: FlappyFish
-  organizationId: loopover
+  projectName: Cloneflop
+  organizationId: hmvu157
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

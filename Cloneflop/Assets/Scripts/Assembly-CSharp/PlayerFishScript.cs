@@ -1,11 +1,13 @@
 using UnityEngine;
 using TMPro;
 
+
 public class PlayerFishScript : MonoBehaviour
 {
     public float jumpForce = 5f;
     private Rigidbody2D rb;
     private bool isDead = false;
+    public bool hasStarted = false;
 
     public AudioClip dieSound;
     public AudioClip scoreSound;
@@ -22,7 +24,8 @@ public class PlayerFishScript : MonoBehaviour
     public TextMeshProUGUI highScoreText;
     public TextMeshProUGUI lastScoreText;
 
-    private int highScore;
+    public int highScore;
+    private static int deathCount = 0;
 
     void Start()
     {
@@ -40,12 +43,18 @@ public class PlayerFishScript : MonoBehaviour
     {
         if (isDead) return;
 
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+        // Chỉ thực hiện logic khi game đã bắt đầu
+        if (hasStarted)
         {
-            Fly();
-        }
+            // Phím Space hoặc Click chuột để nhảy tiếp sau khi đã Start
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
+            {
+                Fly();
+            }
 
-        RotateFish();
+            // Chỉ bắt đầu xoay khi game đã chạy
+            RotateFish();
+        }
     }
 
     void Fly()
@@ -98,31 +107,45 @@ public class PlayerFishScript : MonoBehaviour
     {
         if (scoreText != null)
             scoreText.text = score.ToString();
+        if (lastScoreText != null)
+            lastScoreText.text = score.ToString();
     }
 
     void GameOver()
     {
         isDead = true;
+        deathCount++;
 
+        //Tiếng cá chết
         if (dieSound != null)
             AudioSource.PlayClipAtPoint(dieSound, transform.position, audioVolume);
-
+        // Dừng chuyển động và tăng trọng lực để cá rơi nhanh hơn
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 4;
-
+        // Hiển thị điểm số cuối cùng và cập nhật điểm cao nếu cần
         if (lastScoreText != null)
             lastScoreText.text = score.ToString();
-
+        // Cập nhật điểm cao 
         if (score > highScore)
         {
             highScore = score;
             PlayerPrefs.SetInt("HighScore", highScore);
             PlayerPrefs.Save();
         }
-
+        // Hiển thị điểm cao
         if (highScoreText != null)
             highScoreText.text = highScore.ToString();
 
         enabled = false;
+        // Cứ mỗi 3 lần chết thì hiện quảng cáo 1 lần
+        if (deathCount >= 3)
+        {
+            AdsScript ads = FindObjectOfType<AdsScript>();
+            if (ads != null)
+            {
+                ads.ShowAd();
+                deathCount = 0; // Reset lại biến đếm
+            }
+        }
     }
 }

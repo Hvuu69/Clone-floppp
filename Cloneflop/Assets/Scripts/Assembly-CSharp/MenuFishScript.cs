@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class MenuFishScript : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class MenuFishScript : MonoBehaviour
 	public float amplitude = 0.5f;      // biên độ lượn
 	public float frequency = 1f;        // tần số lượn
 	public float changeDirectionTime = 3f; // thời gian đổi hướng
+	public TextMeshProUGUI menuHighScoreText;
 
 	private Vector3 direction;
 	private float timer = 0f;
@@ -16,6 +18,12 @@ public class MenuFishScript : MonoBehaviour
 		// random phase để mỗi con cá có pattern khác nhau
 		offset = Random.Range(0f, 2f * Mathf.PI);
 		SetNewDirection();
+		int record = PlayerPrefs.GetInt("HighScore", 0);
+
+		if (menuHighScoreText != null)
+		{
+			menuHighScoreText.text = record.ToString();
+		}
 	}
 
 	void Update()
