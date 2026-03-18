@@ -3,108 +3,78 @@ using UnityEngine.SceneManagement;
 
 public class OptionsButtonScript : MonoBehaviour
 {
+    [Header("Menus & UI")]
     public GameObject GameUI;
-    public GameObject Tutorial;
-    public GameObject SettingsMenu;
-    public GameObject GameOverMenu;
+    public GameObject Tutorial, GameOverMenu, pauseMenu, optionMenu;
+
+    [Header("Game Control")]
     public GameObject pipeControler;
-    public GameObject highScoreText;
+    public GameObject player;
 
     private Rigidbody2D rb;
     private bool gameStarted = false;
-
-    public GameObject player;
-
-    private bool tutorialStarted = false;
-    private bool gameUIActivated = false;
-
-    public void changeScene(string sceneName)
-    {
-        SceneManager.LoadScene(sceneName);
-        Time.timeScale = 1f;
-    }
+    private bool isPaused = false;
 
     void Start()
     {
         rb = player.GetComponent<Rigidbody2D>();
-
-        // Ban đầu không có trọng lực
-        rb.gravityScale = 0f;
-        int highScore = PlayerPrefs.GetInt("HighScore", 0);
+        rb.gravityScale = 0f; // Vô hiệu hóa trọng lực ban đầu
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !gameStarted)
-        {
-            StartGame();
-        }
+        // Bắt đầu game khi click chuột lần đầu
+        if (Input.GetMouseButtonDown(0) && !gameStarted) StartGame();
     }
 
     void StartGame()
     {
         gameStarted = true;
-
-        // Bật trọng lực cho player
         rb.gravityScale = 0.6f;
 
-        // Lấy script player
-        PlayerFishScript fishScript = player.GetComponent<PlayerFishScript>();
-        if (fishScript != null)
+        // Kích hoạt script cá và cho nhảy ngay lập tức
+        var fish = player.GetComponent<PlayerFishScript>();
+        if (fish)
         {
-            // Cho phép cá bắt đầu xoay (hàm RotateFish trong Update sẽ chạy)
-            fishScript.hasStarted = true;
-
-            // Gọi hàm Fly() ngay lập tức để cá nhảy lên trong lần click đầu tiên
+            fish.hasStarted = true;
             player.SendMessage("Fly");
         }
-        // Tắt tutorial
-        if (Tutorial != null)
-        {
-            Tutorial.SetActive(false);
-        }
-        if (pipeControler != null)
-        {
-            pipeControler.SetActive(true);
-        }
-        // Hiển thị Game UI
-        if (GameUI != null)
-        {
-            GameUI.SetActive(true);
-        }
+
+        SetUIState(gameMode: true);
     }
-    public void RestartGame()
+
+    public void TogglePauseGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        isPaused = !isPaused;
+        Time.timeScale = isPaused ? 0f : 1f;
+        pauseMenu.SetActive(isPaused);
+    }
+
+    // Hàm dùng chung cho các nút Menu
+    public void SetOptionMenu(bool active) => optionMenu?.SetActive(active);
+
+    public void RestartGame() => ChangeScene(SceneManager.GetActiveScene().name);
+
+    public void ChangeScene(string sceneName)
+    {
         Time.timeScale = 1f;
+        SceneManager.LoadScene(sceneName);
     }
 
     public void GameOver()
     {
         Time.timeScale = 0f;
-
-        Debug.Log("Game Over!");
-
-        if (GameOverMenu != null)
-        {
-            GameOverMenu.SetActive(true);
-        }
-
-        if (GameUI != null)
-        {
-            GameUI.SetActive(false);
-        }
-        // Tắt điều khiển
+        GameOverMenu?.SetActive(true);
+        GameUI?.SetActive(false);
+        pipeControler?.SetActive(false);
         enabled = false;
-        // Tắt pipe controler
-        if (pipeControler != null)
-        {
-            pipeControler.SetActive(false);
-        }
-        //tắt GameUI
-        if (GameUI != null)
-        {
-            GameUI.SetActive(false);
-        }
+    }
+
+    // Hàm phụ trợ để dọn dẹp logic bật/tắt UI khi bắt đầu
+    private void SetUIState(bool gameMode)
+    {
+        Tutorial?.SetActive(!gameMode);
+        GameUI?.SetActive(gameMode);
+        pipeControler?.SetActive(gameMode);
     }
 }

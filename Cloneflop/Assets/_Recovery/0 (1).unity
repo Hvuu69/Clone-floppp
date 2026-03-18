@@ -297,6 +297,8 @@ GameObject:
   m_Component:
   - component: {fileID: 174}
   - component: {fileID: 649}
+  - component: {fileID: 648}
+  - component: {fileID: 647}
   - component: {fileID: 646}
   - component: {fileID: 645}
   m_Layer: 0
@@ -6703,6 +6705,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 707415ccb457c5e8af86636e96e52f85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ccfc50e555c73a7f1c7f5abfb09f6e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdd9aefc9193e5e4202cae9293f0ab07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &649
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6718,9 +6744,10 @@ MonoBehaviour:
   GameUI: {fileID: 0}
   Tutorial: {fileID: 0}
   GameOverMenu: {fileID: 0}
+  pipeControler: {fileID: 0}
+  highScoreText: {fileID: 0}
   pauseMenu: {fileID: 0}
   optionMenu: {fileID: 85}
-  pipeControler: {fileID: 0}
   player: {fileID: 575570250}
 --- !u!114 &663
 MonoBehaviour:
@@ -7996,7 +8023,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1140265416, guid: 8b80370f5d15bdb4fb5cbe0a31c25a40, type: 3}
+  m_Sprite: {fileID: 1356360660, guid: 35cb6742ed3570c44a0c5419fa8044d4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8768,7 +8795,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1193440808124216859, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -539.9997
+      value: -539.9991
       objectReference: {fileID: 0}
     - target: {fileID: 2124187867322666184, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
       propertyPath: m_AnchorMax.x
