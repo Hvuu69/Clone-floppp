@@ -43,7 +43,7 @@ public class PlayerFishScript : MonoBehaviour
 
         if (col.CompareTag("ScoreZone"))
         {
-            ScoreManager.Instance.AddScore(1); // Gọi trực tiếp từ ScoreManager
+            ScoreManager.Instance.AddScore(1);
             PlaySound(scoreSound);
         }
         else if (col.CompareTag("Pipe") || col.CompareTag("Ground"))
@@ -60,7 +60,7 @@ public class PlayerFishScript : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
         rb.gravityScale = 4;
-        // Yêu cầu ScoreManager kiểm tra điểm cao
+
         if (ScoreManager.Instance != null)
         {
             ScoreManager.Instance.SaveAndCheckData();

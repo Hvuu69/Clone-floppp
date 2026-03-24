@@ -9053,19 +9053,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1193440808124216859, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -540.00006
+      value: -1080
       objectReference: {fileID: 0}
-    - target: {fileID: 2124187867322666184, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
-      propertyPath: m_AnchorMax.x
+    - target: {fileID: 2531163772629333354, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
+      propertyPath: m_Size
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2124187867322666184, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2124187867322666184, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -7
       objectReference: {fileID: 0}
     - target: {fileID: 3128697093934004026, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
       propertyPath: m_Camera
@@ -9153,19 +9145,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7227045353754237866, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.44987568
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7227045353754237866, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7415813864720837008, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
       propertyPath: m_Name
       value: CanvasChangeFish
-      objectReference: {fileID: 0}
-    - target: {fileID: 7415813864720837008, guid: 00d28938f8d30194ba93f91ca7d16270, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

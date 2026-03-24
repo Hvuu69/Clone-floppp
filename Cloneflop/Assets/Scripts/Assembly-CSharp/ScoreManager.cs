@@ -42,31 +42,19 @@ public class ScoreManager : MonoBehaviour
 
 	public void SaveAndCheckData()
 	{
-		// 1. Lấy lại tổng điểm cũ từ bộ nhớ trước khi cộng (để đảm bảo không bị mất dữ liệu)
+
 		totalScore = PlayerPrefs.GetInt("TotalScore", 0);
-
-		// 2. Cộng dồn điểm của màn chơi vừa rồi vào tổng điểm
 		totalScore += currentScore;
-
-		// 3. Lưu tổng điểm mới vào PlayerPrefs
 		PlayerPrefs.SetInt("TotalScore", totalScore);
 
-		// 4. Kiểm tra và lưu High Score (điểm cao nhất 1 lần chơi)
 		int oldHighScore = PlayerPrefs.GetInt("HighScore", 0);
 		if (currentScore > oldHighScore)
 		{
 			PlayerPrefs.SetInt("HighScore", currentScore);
 		}
-
-		// 5. Kiểm tra mở khóa Skin (nếu có)
 		CheckSkinUnlocks();
-
-		// Quan trọng: Phải gọi Save() để đảm bảo dữ liệu ghi xuống ổ cứng
 		PlayerPrefs.Save();
-
-		// Cập nhật lại giao diện
 		UpdateUI();
-
 		Debug.Log("Game Over! Điểm màn này: " + currentScore + " | Tổng tích lũy: " + totalScore);
 	}
 	void CheckSkinUnlocks()
