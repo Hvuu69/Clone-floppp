@@ -42,6 +42,8 @@ public class OptionsButtonScript : MonoBehaviour
 
         SetUIState(gameMode: true);
     }
+    public void OpenOptionMenu() => SetOptionMenu(true);
+    public void CloseOptionMenu() => SetOptionMenu(false);
 
     public void TogglePauseGame()
     {

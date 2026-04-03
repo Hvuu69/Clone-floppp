@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class SkinManager : MonoBehaviour
 {
@@ -28,8 +29,14 @@ public class SkinManager : MonoBehaviour
     // --- HÀM DÙNG TẠI MENUSCENE (Gán vào Button OnClick) ---
     public void SelectSkin(int index)
     {
+        if (!ScoreManager.Instance.IsSkinUnlocked(index))
+        {
+            Debug.Log("Skin này chưa mở khóa!");
+            return;
+        }
+
         SelectedSkinIndex = index;
-        Debug.Log("Đã lưu Skin ID: " + index);
+        Debug.Log("Đã chọn Skin: " + index);
     }
 
     public void LoadGame()
@@ -55,5 +62,31 @@ public class SkinManager : MonoBehaviour
         {
             Debug.LogError("Chỉ số Skin không hợp lệ hoặc chưa kéo Animator vào mảng!");
         }
+    }
+
+    public void RandomSkin()
+    {
+        if (skinAnimators.Length == 0) return;
+
+        List<int> unlockedSkins = new List<int>();
+
+        for (int i = 0; i < skinAnimators.Length; i++)
+        {
+            if (ScoreManager.Instance.IsSkinUnlocked(i))
+            {
+                unlockedSkins.Add(i);
+            }
+        }
+
+        if (unlockedSkins.Count == 0)
+        {
+            Debug.Log("Không có skin nào được mở!");
+            return;
+        }
+
+        int randomIndex = Random.Range(0, unlockedSkins.Count);
+        SelectedSkinIndex = unlockedSkins[randomIndex];
+
+        Debug.Log("Random Skin: " + SelectedSkinIndex);
     }
 }

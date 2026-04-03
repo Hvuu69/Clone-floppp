@@ -12,25 +12,29 @@ public class ScoreManager : MonoBehaviour
 	public TextMeshProUGUI totalScoreText;
 
 	[Header("Skin System")]
-	public List<int> skinUnlockMilestones; // Danh sách mốc điểm để mở skin (vd: 100, 500, 1000)
+	[Tooltip("Danh sách mốc điểm tích lũy để mở skin (vd: 100, 500, 1000)")]
+	public List<int> skinUnlockMilestones;
 
 	private int currentScore = 0;
 	private int highScore;
 	private int totalScore;
 
-
 	void Awake()
 	{
-		if (Instance == null) Instance = this;
+		if (Instance == null)
+		{
+			Instance = this;
+			// Nếu bạn muốn ScoreManager tồn tại xuyên suốt các Scene
+			// DontDestroyOnLoad(gameObject); 
+		}
 		else Destroy(gameObject);
 	}
 
 	void Start()
 	{
-		// Tải dữ liệu cũ
+		// Tải dữ liệu khi bắt đầu game
 		highScore = PlayerPrefs.GetInt("HighScore", 0);
 		totalScore = PlayerPrefs.GetInt("TotalScore", 0);
-
 		UpdateUI();
 	}
 
@@ -42,30 +46,40 @@ public class ScoreManager : MonoBehaviour
 
 	public void SaveAndCheckData()
 	{
-
-		totalScore = PlayerPrefs.GetInt("TotalScore", 0);
+		// 1. Cập nhật Tổng điểm tích lũy
 		totalScore += currentScore;
 		PlayerPrefs.SetInt("TotalScore", totalScore);
 
-		int oldHighScore = PlayerPrefs.GetInt("HighScore", 0);
-		if (currentScore > oldHighScore)
+		// 2. Cập nhật Điểm cao nhất (High Score)
+		if (currentScore > highScore)
 		{
-			PlayerPrefs.SetInt("HighScore", currentScore);
+			highScore = currentScore;
+			PlayerPrefs.SetInt("HighScore", highScore);
 		}
+
+		// 3. Kiểm tra mở khóa skin
 		CheckSkinUnlocks();
+
+		// 4. Lưu lại và cập nhật UI
 		PlayerPrefs.Save();
 		UpdateUI();
-		Debug.Log("Game Over! Điểm màn này: " + currentScore + " | Tổng tích lũy: " + totalScore);
+
+		Debug.Log($"Game Over! Điểm màn này: {currentScore} | Tổng tích lũy: {totalScore}");
+
+		// Reset điểm hiện tại cho lần chơi sau (nếu cần)
+		// currentScore = 0; 
 	}
+
 	void CheckSkinUnlocks()
 	{
 		for (int i = 0; i < skinUnlockMilestones.Count; i++)
 		{
-			if (totalScore >= skinUnlockMilestones[i])
+			// Kiểm tra: Nếu đủ điểm VÀ skin này CHƯA từng được mở khóa trước đó
+			if (totalScore >= skinUnlockMilestones[i] && !IsSkinUnlocked(i))
 			{
-				// Lưu trạng thái đã mở khóa skin thứ i
 				PlayerPrefs.SetInt("SkinUnlocked_" + i, 1);
-				Debug.Log("Đã mở khóa Skin mới tại mốc: " + skinUnlockMilestones[i]);
+				Debug.Log("<color=green>CHÚC MỪNG!</color> Đã mở khóa Skin mới tại mốc: " + skinUnlockMilestones[i]);
+
 			}
 		}
 	}
@@ -73,15 +87,47 @@ public class ScoreManager : MonoBehaviour
 	public void UpdateUI()
 	{
 		string s = currentScore.ToString();
-		// Dùng vòng lặp để cập nhật tất cả các Text trong mảng
 		foreach (var textObj in scoreTexts)
 		{
 			if (textObj != null) textObj.text = s;
 		}
+
 		if (highScoreText) highScoreText.text = highScore.ToString();
-		if (totalScoreText) totalScoreText.text = "Total: " + totalScore;
+		if (totalScoreText) totalScoreText.text = "Total: " + totalScore.ToString();
 	}
 
-	// Hàm kiểm tra xem một skin cụ thể đã mở chưa (dùng cho menu chọn skin)
-	public bool IsSkinUnlocked(int index) => PlayerPrefs.GetInt("SkinUnlocked_" + index, 0) == 1;
+	// Hàm kiểm tra trạng thái mở khóa
+	public bool IsSkinUnlocked(int index)
+	{
+		// Skin mặc định (index 0) nên luôn được mở
+		if (index == 0) return true;
+		return PlayerPrefs.GetInt("SkinUnlocked_" + index, 0) == 1;
+	}
+
+	// Hàm reset dữ liệu (Dùng để test khi cần)
+	[ContextMenu("Reset All Data")]
+	public void ResetData()
+	{
+		PlayerPrefs.DeleteAll();
+		Debug.Log("Đã xóa hết dữ liệu game!");
+	}
+
+	[ContextMenu("Add 100 Total Score (Debug)")]
+	public void DebugAddTotalScore()
+	{
+		totalScore += 100;
+		PlayerPrefs.SetInt("TotalScore", totalScore);
+
+		CheckSkinUnlocks();
+		PlayerPrefs.Save();
+		UpdateUI();
+
+		Debug.Log("DEBUG: Added 100 Total Score. New Total = " + totalScore);
+	}
+	public void DebugAddScoreButton()
+	{
+		totalScore += 100;
+		CheckSkinUnlocks();
+		UpdateUI();
+	}
 }
