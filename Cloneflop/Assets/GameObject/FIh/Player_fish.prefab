@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4000656042772171383}
   - component: {fileID: 4590018223312234205}
   m_Layer: 0
-  m_Name: GreenTail_Player_fish
+  m_Name: Player_fish
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86,7 +86,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: cf33d3d687f0f234da7982d5453f27f1, type: 2}
+  m_Sprite: {fileID: 21300000, guid: d43ee1775c1eb9941b47ce00a1494187, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -192,7 +192,7 @@ Animator:
   m_GameObject: {fileID: 9216349759674609977}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 49e4130828d1e614c8888bdebdee8e43, type: 2}
+  m_Controller: {fileID: 9100000, guid: cd0f8f2f574789f40afb1e15fefafe3e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

@@ -12,8 +12,11 @@ public class ScoreManager : MonoBehaviour
 	public TextMeshProUGUI totalScoreText;
 
 	[Header("Skin System")]
-	[Tooltip("Danh sách mốc điểm tích lũy để mở skin (vd: 100, 500, 1000)")]
+	[Tooltip("Danh sách mốc điểm để mở khóa skin. Index 0 ứng với Skin 0, Index 1 ứng với Skin 1...")]
 	public List<int> skinUnlockMilestones;
+
+	[Header("Debug Tools (Inspector)")]
+	public int debugSetTotalScoreValue;
 
 	private int currentScore = 0;
 	private int highScore;
@@ -24,19 +27,27 @@ public class ScoreManager : MonoBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
-			// Nếu bạn muốn ScoreManager tồn tại xuyên suốt các Scene
+			// Đảm bảo ScoreManager không bị mất khi chuyển cảnh nếu cần
 			// DontDestroyOnLoad(gameObject); 
 		}
-		else Destroy(gameObject);
+		else
+		{
+			Destroy(gameObject);
+		}
 	}
 
 	void Start()
 	{
-		// Tải dữ liệu khi bắt đầu game
+		// Load dữ liệu khi vào game
 		highScore = PlayerPrefs.GetInt("HighScore", 0);
 		totalScore = PlayerPrefs.GetInt("TotalScore", 0);
+
+		// Kiểm tra mở khóa skin ngay khi vào game dựa trên totalScore cũ
+		CheckSkinUnlocks();
 		UpdateUI();
 	}
+
+	// --- LOGIC ĐIỂM SỐ ---
 
 	public void AddScore(int amount)
 	{
@@ -46,42 +57,52 @@ public class ScoreManager : MonoBehaviour
 
 	public void SaveAndCheckData()
 	{
-		// 1. Cập nhật Tổng điểm tích lũy
+		// Cộng dồn điểm hiện tại vào tổng điểm
 		totalScore += currentScore;
 		PlayerPrefs.SetInt("TotalScore", totalScore);
 
-		// 2. Cập nhật Điểm cao nhất (High Score)
+		// Kiểm tra kỷ lục mới
 		if (currentScore > highScore)
 		{
 			highScore = currentScore;
 			PlayerPrefs.SetInt("HighScore", highScore);
 		}
 
-		// 3. Kiểm tra mở khóa skin
-		CheckSkinUnlocks();
+		// Reset điểm hiện tại sau khi đã cộng dồn vào tổng
+		currentScore = 0;
 
-		// 4. Lưu lại và cập nhật UI
+		CheckSkinUnlocks();
 		PlayerPrefs.Save();
 		UpdateUI();
-
-		Debug.Log($"Game Over! Điểm màn này: {currentScore} | Tổng tích lũy: {totalScore}");
-
-		// Reset điểm hiện tại cho lần chơi sau (nếu cần)
-		// currentScore = 0; 
 	}
 
-	void CheckSkinUnlocks()
+	public void CheckSkinUnlocks()
 	{
+		if (skinUnlockMilestones == null) return;
+
 		for (int i = 0; i < skinUnlockMilestones.Count; i++)
 		{
-			// Kiểm tra: Nếu đủ điểm VÀ skin này CHƯA từng được mở khóa trước đó
-			if (totalScore >= skinUnlockMilestones[i] && !IsSkinUnlocked(i))
+			// Nếu tổng điểm >= mốc quy định
+			if (totalScore >= skinUnlockMilestones[i])
 			{
-				PlayerPrefs.SetInt("SkinUnlocked_" + i, 1);
-				Debug.Log("<color=green>CHÚC MỪNG!</color> Đã mở khóa Skin mới tại mốc: " + skinUnlockMilestones[i]);
-
+				// Kiểm tra xem trong máy đã lưu là "đã mở" chưa (0 là chưa, 1 là rồi)
+				if (PlayerPrefs.GetInt("SkinUnlocked_" + i, 0) == 0)
+				{
+					PlayerPrefs.SetInt("SkinUnlocked_" + i, 1);
+					Debug.Log($"<color=green>🎉 ĐÃ MỞ KHÓA SKIN INDEX {i} TẠI MỐC {skinUnlockMilestones[i]} ĐIỂM!</color>");
+				}
 			}
 		}
+		PlayerPrefs.Save();
+	}
+
+	public bool IsSkinUnlocked(int index)
+	{
+		// Skin đầu tiên (index 0) thường mặc định là mở
+		if (index == 0) return true;
+
+		// Các skin còn lại kiểm tra giá trị đã lưu
+		return PlayerPrefs.GetInt("SkinUnlocked_" + index, 0) == 1;
 	}
 
 	public void UpdateUI()
@@ -92,42 +113,39 @@ public class ScoreManager : MonoBehaviour
 			if (textObj != null) textObj.text = s;
 		}
 
-		if (highScoreText) highScoreText.text = highScore.ToString();
-		if (totalScoreText) totalScoreText.text = "Total: " + totalScore.ToString();
+		if (highScoreText != null) highScoreText.text = highScore.ToString();
+		if (totalScoreText != null) totalScoreText.text = "Total: " + totalScore.ToString();
 	}
 
-	// Hàm kiểm tra trạng thái mở khóa
-	public bool IsSkinUnlocked(int index)
-	{
-		// Skin mặc định (index 0) nên luôn được mở
-		if (index == 0) return true;
-		return PlayerPrefs.GetInt("SkinUnlocked_" + index, 0) == 1;
-	}
+	// --- CÔNG CỤ DEBUG (Chuột phải vào Component trên Inspector để dùng) ---
 
-	// Hàm reset dữ liệu (Dùng để test khi cần)
-	[ContextMenu("Reset All Data")]
-	public void ResetData()
+	[ContextMenu("Set Total Score From Value")]
+	public void SetTotalScoreFromInspector()
 	{
-		PlayerPrefs.DeleteAll();
-		Debug.Log("Đã xóa hết dữ liệu game!");
-	}
-
-	[ContextMenu("Add 100 Total Score (Debug)")]
-	public void DebugAddTotalScore()
-	{
-		totalScore += 100;
+		totalScore = debugSetTotalScoreValue;
 		PlayerPrefs.SetInt("TotalScore", totalScore);
-
 		CheckSkinUnlocks();
-		PlayerPrefs.Save();
 		UpdateUI();
-
-		Debug.Log("DEBUG: Added 100 Total Score. New Total = " + totalScore);
+		Debug.Log("<color=cyan>Đã gán Total Score thành: </color>" + totalScore);
 	}
-	public void DebugAddScoreButton()
+
+	[ContextMenu("Add 500 Total Score")]
+	public void QuickAdd500()
 	{
-		totalScore += 100;
+		totalScore += 500;
+		PlayerPrefs.SetInt("TotalScore", totalScore);
 		CheckSkinUnlocks();
 		UpdateUI();
+	}
+
+	[ContextMenu("Reset All Data")]
+	public void ResetAllData()
+	{
+		PlayerPrefs.DeleteAll(); // Xóa sạch bộ nhớ
+		currentScore = 0;
+		highScore = 0;
+		totalScore = 0;
+		UpdateUI();
+		Debug.Log("<color=red>Dữ liệu đã được xóa sạch!</color>");
 	}
 }
